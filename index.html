@@ -1,0 +1,66 @@
+<html>
+    <head>
+        <title>Jquery UA bug</title>
+
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+        <script type="text/javascript" charset="utf-8" src="./core.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./support.js"></script>
+        <script type="text/javascript" charset="utf-8" src="./manipulation.js"></script>
+
+        <script type="text/javascript" charset="utf-8" src="https://github.com/douglascrockford/JSON-js/raw/master/json2.js"></script>
+
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+
+        <script type="text/javascript" charset="utf-8">
+            $(document).ready(function () {
+                $('#ua').append(JSON.stringify($.browser));
+                $('#document_mode').append(document.documentMode);
+            });
+        </script>
+    </head>
+    <body>
+        <p>This page demonstrates a case in which the current browser
+        recognition feature of jQuery doesn't give a useful value for Internet
+        Explorer's version.</p>
+
+        <p>The current version of jQuery doesn't check for IE's ( >= 8 )
+        <a href="http://msdn.microsoft.com/en-us/library/cc288325%28v=vs.85%29.aspx">Document Compatibility Mode</a>,
+        that makes it possible to render a page in a way similar to previous IE version.</p>
+
+        <p>While it totally renders the page as if it was a previous version,
+        IE doesn't change the user-agent to match that version, while
+        using the document compatibility mode.</p>
+
+        <p>Therefore jQuery, which its browser detection feature rely solely
+        on the user-agent, keep detecting the IE version as the real browser
+        version and not the version in use for the document.</p>
+
+        <p>While jQuery gives the real browser version correctly, I think that
+        for the most use cases this info is useless.</p>
+
+        <p>For example, the easiest (only?) way to detect whether the css
+        attribute inline-block is being rendered correctly is by checking the
+        IE version, since other then ie &lt; 8 all the browsers 
+        <a href="http://www.quirksmode.org/css/display.html#t03">support it</a>.
+
+        <p>Consider a jQuery plugins developer that decides to not mess his css
+        files with css hacks such as: "*display: inline;"
+        <a href="http://flipc.blogspot.com/2009/02/damn-ie7-and-inline-block.html">to
+        set specific rules for ie6/7</a> instead he choose a technique similar
+        to the one <a href="http://headjs.com/">headjs</a> uses and adds classes
+        to represent the current IE version which later he'll use for setting
+        specific rules. So for IE7 for example <b>based on jQuery's browser
+        detection feature</b> he'll add to one of its main elements "ie7 lt-8"
+        and in his css files he'll put "lt-8 {display: inline; zoom: 1;}"</p>
+
+        <p>If this plugin will be used in a page that uses the Document
+        Compatibility Mode to be rendered as IE7 - it will be displayed badly
+        since it won't recognize that it's running under IE7 so the rules
+        relates to IE7 in the stylesheet won't apply.</p>
+
+        <p>This page demonstrate that situation.</p>
+
+        <div id="ua"></div><div id="document_mode"></div>
+    </body>
+</html>
